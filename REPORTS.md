@@ -2,62 +2,68 @@
 
 1. Qual é o nome do relator?
 
-    > Escreva sua resposta aqui
+    > Raynara dos Santos Silva
 
 2. A etapa foi completamente ou parcialmente concluída?
 
-    > Escreva sua resposta aqui
+    > Parcilamente comcluída
 
 3. No caso de parcialmente concluída, o que não foi concluído?
 
-    > Escreva sua resposta aqui
+    > O parser
 
 4. O programa passa nos testes automatizados?
     
-    > Escreva sua resposta aqui
+    > Não.
 
 5. Algum erro de execução foi encontrado para alguma das entradas? Quais?
     
-    > Escreva sua resposta aqui
+    > FAIL: test_number_of_minus (test_lexer.LexerTest); FAIL: test_number_of_tokens (test_lexer.LexerTest); FAIL: test_syntax_error (test_parser.ParserTest)
 
 6. Quais as dificuldades encontradas para realização da etapa do projeto?
     
-    > Escreva sua resposta aqui
+    > Remoção de ambiguidades e escrita de algumas expressões regulares.
+    > Remoção de ambiguidades e escrita de algumas expressões regulares, desenvolmento do parser.
 
 7. Qual a participação de cada membro da equipe na etapa de execução?
     
-    > Escreva sua resposta aqui
+    > Raynara: lexer e parser;
+    > Leonardo: parser e lexer;
+    > Pedro Felippe: parser e lexer
 
 
 # 2º Relatóio: Etapa AI-b (Árvores Sintática Abstrata e Análise Semântica)
 
 1. Qual é o nome do relator?
 
-    > Escreva sua resposta aqui
+    > LEONARDO OLIVEIRA SILVA
 
 2. A etapa foi completamente ou parcialmente concluída?
 
-    > Escreva sua resposta aqui
+    > Parcialmente concluída
 
 3. No caso de parcialmente concluída, o que não foi concluído?
 
-    > Escreva sua resposta aqui
+    > O visitor.
 
 4. O programa passa nos testes automatizados?
     
-    > Escreva sua resposta aqui
+    > Não, dos 73 testes executados, o projeto falha em 27.
 
 5. Algum erro de execução foi encontrado para alguma das entradas? Quais?
     
-    > Escreva sua resposta aqui
+    > Não ocorreu erro de execução, só dos testes.
 
 6. Quais as dificuldades encontradas para realização da etapa do projeto?
     
-    > Escreva sua resposta aqui
+    > Desistência de um dos membros da equipe;
+    > Entender como funciona os visitors;
+    > Construção de algumas definições na tabela de símbolo e checagem de tipos.
 
 7. Qual a participação de cada membro da equipe na etapa de execução?
     
-    > Escreva sua resposta aqui
+    > Leonado: tabela de símbolos, checagem de tipos, modificação do parser.
+    > Raynara: modificação do parser, checagem de tipos.
 
 
 # 3º Relatóio: Etapa AI-c (Tradução para o Código Intermediário)
