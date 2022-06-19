@@ -1,4 +1,3 @@
-from ast import Expression
 from pymjc.front.ast import *
 from pymjc.front.lexer import MJLexer
 from sly import Parser
@@ -16,7 +15,7 @@ class MJParser(Parser):
                   ('left', PLUS, MINUS),        
                   ('left', TIMES),
                   ('right', NOT),
-		  ('left', DOT)
+                  ('left', DOT)
                  )
                  
     tokens = MJLexer.tokens
@@ -31,11 +30,12 @@ class MJParser(Parser):
     ###################################    
     @_('MainClass ClassDeclarationStar')
     def Goal(self, p):
+        p.ClassDeclarationStar.class_decl_list.reverse()
         return Program(p.MainClass, p.ClassDeclarationStar)
     
     @_('CLASS Identifier LEFTBRACE PUBLIC STATIC VOID MAIN LEFTPARENT STRING LEFTSQRBRACKET RIGHTSQRBRACKET Identifier RIGHTPARENT LEFTBRACE Statement RIGHTBRACE RIGHTBRACE')
     def MainClass(self, p):
-        return MainClass(p.Identifier0, arg_name_ideintifier=p.Identifier1, statement=p.Statement)
+        return MainClass(p.Identifier0, p.Identifier1, p.Statement)
 
     @_('Empty')
     def ClassDeclarationStar(self, p):
@@ -48,10 +48,11 @@ class MJParser(Parser):
 
     @_('CLASS Identifier SuperOpt LEFTBRACE VarDeclarationStar MethodDeclarationStar RIGHTBRACE')
     def ClassDeclaration(self, p):
-        if(p.SuperOpt == None):
+        if p.SuperOpt is None:
             return ClassDeclSimple(p.Identifier, p.VarDeclarationStar, p.MethodDeclarationStar)
         
         return ClassDeclExtends(p.Identifier, p.SuperOpt, p.VarDeclarationStar, p.MethodDeclarationStar)
+
 
     @_('Empty')
     def SuperOpt(self, p):
@@ -81,19 +82,20 @@ class MJParser(Parser):
     @_('MethodDeclarationStar MethodDeclaration')
     def MethodDeclarationStar(self, p):
         p.MethodDeclarationStar.add_element(p.MethodDeclaration)
-        return p.MethodDeclarationStar 
+        return p.MethodDeclarationStar
 
     @_('PUBLIC Type Identifier LEFTPARENT FormalParamListOpt RIGHTPARENT LEFTBRACE VarDeclarationStar StatementStar RETURN Expression SEMICOLON RIGHTBRACE')
     def MethodDeclaration(self, p):
+        p.StatementStar.statement_list.reverse()
         return MethodDecl(p.Type, p.Identifier, p.FormalParamListOpt, p.VarDeclarationStar, p.StatementStar, p.Expression)
 
     @_('Empty')
     def FormalParamListOpt(self, p):
-        return FormalList() 
+        return FormalList()
         
     @_('FormalParamStar')
     def FormalParamListOpt(self, p):            
-        return p.FormalParamStar 
+        return p.FormalParamStar
 
     @_('FormalParam')
     def FormalParamStar(self, p):
@@ -109,7 +111,6 @@ class MJParser(Parser):
     @_('Type Identifier')
     def FormalParam(self, p):
         return Formal(p.Type, p.Identifier)
-        #return p
         
     ###################################
     #Type Declarations                #
@@ -117,7 +118,7 @@ class MJParser(Parser):
 
     @_('INT')
     def Type(self, p):
-        return IntegerType() #
+        return IntegerType()
 
     @_('INT LEFTSQRBRACKET RIGHTSQRBRACKET')
     def Type(self, p):
@@ -125,11 +126,11 @@ class MJParser(Parser):
 
     @_('BOOLEAN')
     def Type(self, p):
-        return BooleanType() 
+        return BooleanType()
 
     @_('Identifier')
     def Type(self, p):
-        return IdentifierType(p.Identifier.name) 
+        return IdentifierType(p.Identifier.name)
 
     ###################################
     #Statements Declarations          #
@@ -137,7 +138,7 @@ class MJParser(Parser):
 
     @_('Empty')
     def StatementStar(self, p):
-        return StatementList() 
+        return StatementList()
 
     @_('Statement StatementStar')
     def StatementStar(self, p):
@@ -158,7 +159,7 @@ class MJParser(Parser):
 
     @_('PRINT LEFTPARENT Expression RIGHTPARENT SEMICOLON')
     def Statement(self, p):
-        return Print(p.Expression) 
+        return Print(p.Expression)
 
     @_('Identifier EQUALS Expression SEMICOLON')
     def Statement(self, p):
@@ -174,23 +175,23 @@ class MJParser(Parser):
 
     @_('Expression AND Expression')
     def Expression(self, p):
-        return And(left_side=p.Expression0, right_side=p.Expression1) #
+        return And(p.Expression0, p.Expression1)
 
     @_('Expression LESS Expression')
     def Expression(self, p):
-        return LessThan(left_side=p.Expression0, right_side=p.Expression1) #
+        return LessThan(p.Expression0, p.Expression1)
 
     @_('Expression PLUS Expression')
     def Expression(self, p):
-        return Plus(left_side=p.Expression0, right_side=p.Expression1) #
+        return Plus(p.Expression0, p.Expression1)
 
     @_('Expression MINUS Expression')
     def Expression(self, p):
-        return Minus(left_side=p.Expression0, right_side=p.Expression1) #
+        return Minus(p.Expression0, p.Expression1)
 
     @_('Expression TIMES Expression')
     def Expression(self, p):
-        return Times(left_side=p.Expression0, right_side=p.Expression1) #
+        return Times(p.Expression0, p.Expression1)
 
     @_('Expression LEFTSQRBRACKET Expression RIGHTSQRBRACKET')
     def Expression(self, p):
@@ -198,7 +199,7 @@ class MJParser(Parser):
 
     @_('Expression DOT LENGTH')
     def Expression(self, p):
-        return ArrayLength(p.Expression) #
+        return ArrayLength(p.Expression)
 
     @_('Expression DOT Identifier LEFTPARENT ExpressionListOpt RIGHTPARENT')
     def Expression(self, p):
@@ -210,13 +211,13 @@ class MJParser(Parser):
 
     @_('ExpressionListStar')
     def ExpressionListOpt(self, p):
-        return p.ExpressionListStar 
+        return p.ExpressionListStar
 
     @_('Expression')
     def ExpressionListStar(self, p):
-        expressions = ExpList()
-        expressions.add_element(p.Expression)
-        return expressions 
+        exp_list = ExpList()
+        exp_list.add_element(p.Expression)
+        return exp_list
 
     @_('ExpressionListStar COMMA Expression')
     def ExpressionListStar(self, p):
@@ -225,7 +226,7 @@ class MJParser(Parser):
 
     @_('THIS')
     def Expression(self, p):
-        return This() 
+        return This()
 
     @_('NEW INT LEFTSQRBRACKET Expression RIGHTSQRBRACKET')
     def Expression(self, p):
@@ -249,12 +250,6 @@ class MJParser(Parser):
 
     @_('Literal')
     def Expression(self, p):
-        if(p.Literal == "true"):
-            return TrueExp()
-        
-        elif(p.Literal == "false"):
-            return FalseExp()
-        
         return p.Literal
 
     ###################################
