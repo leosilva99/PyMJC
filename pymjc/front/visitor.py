@@ -1549,7 +1549,7 @@ class TranslateVisitor(IRVisitor):
 
         return None
 
-
+    @abstractmethod
     def visit_class_decl_extends(self, element: ClassDeclExtends) -> translate.Exp:      
         return None
 
@@ -1614,6 +1614,7 @@ class TranslateVisitor(IRVisitor):
 
     
     def visit_int_array_type(self, element: IntArrayType) -> translate.Exp:
+        #element.accept_type(self)
         return None
 
     
@@ -1759,9 +1760,10 @@ class TranslateVisitor(IRVisitor):
 
         return translate.Exp(tree.MEM(plus2))
 
-    @abstractmethod
+    #
     def visit_array_length(self, element: ArrayLength) -> translate.Exp:
-        pass
+        exp: translate.Exp = element.accept_ir(self)
+        return translate.Exp(tree.MEM(exp.un_ex()))
 
     #@abstractmethod
     def visit_call(self, element: Call) -> translate.Exp:
@@ -1783,6 +1785,8 @@ class TranslateVisitor(IRVisitor):
             
     @abstractmethod
     def visit_integer_literal(self, element: IntegerLiteral) -> translate.Exp:
+        #constt = tree.CONST(self)
+        #return translate.Exp(constt)
         pass
 
     #
@@ -1797,6 +1801,7 @@ class TranslateVisitor(IRVisitor):
 
     @abstractmethod
     def visit_identifier_exp(self, element: IdentifierExp) -> translate.Exp:
+
         pass
 
     #
