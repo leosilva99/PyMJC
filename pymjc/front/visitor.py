@@ -1551,7 +1551,7 @@ class TranslateVisitor(IRVisitor):
 
 
     def visit_class_decl_extends(self, element: ClassDeclExtends) -> translate.Exp:
-        pass
+        return None
 
     def visit_class_decl_simple(self, element: ClassDeclSimple) -> translate.Exp:
         element.class_name_id.accept_ir(self)
@@ -1605,35 +1605,34 @@ class TranslateVisitor(IRVisitor):
         self.var_access = {}
         return None
 
-    @abstractmethod
+
     def visit_formal(self, element: Formal) -> translate.Exp:
         element.name_id.accept_ir(self)
         element.type.accept_ir(self)
         self.current_frame.alloc_local(False)
         return None
 
-    @abstractmethod
+    
     def visit_int_array_type(self, element: IntArrayType) -> translate.Exp:
         element.accept_ir(self)
         return None
 
-    @abstractmethod
+    
     def visit_boolean_type(self, element: BooleanType) -> translate.Exp:
         element.accept_ir(self)
         return None
 
-    @abstractmethod
+    
     def visit_integer_type(self, element: IntegerType) -> translate.Exp:
         element.accept_ir(self)
         return None
 
-    @abstractmethod
+    
     def visit_identifier_type(self, element: IdentifierType) -> translate.Exp:
         return None
 
-    @abstractmethod
+
     def visit_block(self, element: Block) -> translate.Exp:
-        
         stm = tree.CONST(0)
         
         for index in range(element.statement_list.size()):
@@ -1641,24 +1640,52 @@ class TranslateVisitor(IRVisitor):
             seq = tree.SEQ(tree.EXP(stm), expr)
             stm = tree.ESEQ(seq, tree.CONST(0))
         
-        return tree.Exp(stm)
+        return translate.Exp(stm)
 
-    @abstractmethod
+
     def visit_if(self, element: If) -> translate.Exp:
         exp: tree.Exp = element.condition_exp.accept_ir(self)
         stm1: tree.Stm = element.if_statement.accept_ir(self).un_ex()
         stm2: tree.Stm = element.else_statement.accept_ir(self).un_ex()
         
-    
+        true: tree.Label
+        false: tree.Label
+        ifJoin: tree.Label
         
-  
-    @abstractmethod
+        trueStm = tree.SEQ(stm1, tree.LABEL(true))
+        falseStm =  tree.SEQ(stm2, tree.LABEL(false))
+        seqTrueFalse = tree.SEQ(trueStm, falseStm)
+        
+        cjump = tree.CJUMP(tree.CJUMP.GT, exp, tree.CONST(1), true, false)
+        cond = tree.SEQ(tree.LABEL(ifJoin), cjump)
+        secondSeq = tree.SEQ(cond, seqTrueFalse)
+        mainSeq = tree.SEQ(secondSeq, tree.LABEL(ifJoin))
+        
+        return translate.Exp(tree.ESEQ(mainSeq, tree.CONST(0)))
+        
+
     def visit_while(self, element: While) -> translate.Exp:
-        pass
+        exp: translate.Exp = element.condition_exp.accept_ir(self)
+        stm: tree.EXP = element.statement.accept_ir(self).un_ex()
+        
+        loop: tree.Label
+        done: tree.Label
+        body: tree.Label
+        
+        bodyStm = tree.SEQ(stm, tree.LABEL(body))
+        jump = tree.JUMP(done)
+        seqExec = tree.SEQ(bodyStm, jump)
+        cjump = tree.CJUMP(tree.CJUMP.GT, exp.un_ex(), tree.CONST(1), body, done)
+        
+        seqTeste = tree.SEQ(tree.LABEL(loop), cjump)
+        secondSeq = tree.SEQ(seqTeste,seqExec)
+        mainSeq = tree.SEQ(secondSeq, tree.LABEL(done))
+        
+        return translate.Exp(tree.ESEQ(mainSeq, tree.CONST(0)))
 
     @abstractmethod
     def visit_print(self, element: Print) -> translate.Exp:
-        pass
+        exp: tree.Exp = element.print_exp.accept_ir(self)
 
     def visit_assign(self, element: Assign) -> translate.Exp:
         var: translate.Exp = element.left_side_id.accept_ir(self)
