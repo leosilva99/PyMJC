@@ -1748,9 +1748,16 @@ class TranslateVisitor(IRVisitor):
         
         return translate.Exp(binop)
 
-    @abstractmethod
+    #
     def visit_array_lookup(self, element: ArrayLookup) -> translate.Exp:
-        pass
+        exp1: translate.Exp = element.accept_ir(self)
+        exp2: translate.Exp = element.accept_ir(self)
+
+        plus1 = tree.BINOP(tree.BINOP.PLUS, tree.CONST(1), exp2.un_ex())
+        mult = tree.BINOP(tree.BINOP.MUL, plus1, tree.CONST(self.current_frame.word_size()))
+        plus2 = tree.BINOP(tree.BINOP.PLUS, exp1.un_ex(), mult)
+
+        return translate.Exp(tree.MEM(plus2))
 
     @abstractmethod
     def visit_array_length(self, element: ArrayLength) -> translate.Exp:
@@ -1806,9 +1813,9 @@ class TranslateVisitor(IRVisitor):
 
     #
     def visit_not(self, element: Not) -> translate.Exp:
-        exp: tree.Exp = element.negated_exp.accept_ir(self)
+        exp: translate.Exp = element.negated_exp.accept_ir(self)
         
-        binop = tree.BINOP(tree.BINOP.MINUS, tree.CONST(1), exp.un_Ex())
+        binop = tree.BINOP(tree.BINOP.MINUS, tree.CONST(1), exp.un_ex())
 
         return translate.Exp(binop)
 
