@@ -70,7 +70,7 @@
 
 1. Qual é o nome do relator?
 
-    > Escreva sua resposta aqui
+    > Raynara dos Santos Silva
 
 2. A etapa foi completamente ou parcialmente concluída?
 
@@ -90,11 +90,12 @@
 
 6. Quais as dificuldades encontradas para realização da etapa do projeto?
     
-    > Escreva sua resposta aqui
+    > Tradução de algumas instruções para o código intermediário.
+    > Entender como percorrer e acessar algumas classes e métodos.
 
 7. Qual a participação de cada membro da equipe na etapa de execução?
     
-    > Escreva sua resposta aqui
+    > Os dois trabalharam conjuntamente para codificar o IRVisitor.
 
 
 # 4º Relatóio: Etapa AI-d (Seleção de Instruções)
