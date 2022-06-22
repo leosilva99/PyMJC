@@ -1782,9 +1782,9 @@ class TranslateVisitor(IRVisitor):
     def visit_identifier_exp(self, element: IdentifierExp) -> translate.Exp:
         pass
 
-    @abstractmethod
+    #
     def visit_this(self, element: This) -> translate.Exp:
-        pass
+        return translate.Exp(tree.MEM(tree.TEMP(self.current_frame.FP())))
 
     @abstractmethod
     def visit_new_array(self, element: NewArray) -> translate.Exp:
@@ -1804,4 +1804,6 @@ class TranslateVisitor(IRVisitor):
 
     @abstractmethod
     def visit_identifier(self, element: Identifier) -> translate.Exp:
+        #acc: Access = self.current_frame.alloc_local(False)
+        #return translate.Exp(acc.exp(tree.TEMP(self.current_frame.FP())))
         pass
