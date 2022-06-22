@@ -1709,46 +1709,42 @@ class TranslateVisitor(IRVisitor):
         return translate.Exp(tree.ESEQ(move, tree.CONST(0)))
 
     def visit_and(self, element: And) -> translate.Exp:
-        exp1: translate.Exp = element.left_side_exp.accept_ir(self)
-        exp2: translate.Exp = element.right_side_exp.accept_ir(self)
+        exp1: translate.Exp = element.left_side_exp.accept_ir(self).un_ex()
+        exp2: translate.Exp = element.right_side_exp.accept_ir(self).un_ex()
         
-        binop = tree.BINOP(tree.BINOP.AND, exp1.un_ex(), exp2.un_ex())
+        binop = tree.BINOP(tree.BINOP.AND, exp1, exp2)
         
         return translate.Exp(binop)
     
-    @abstractmethod
     def visit_less_than(self, element: LessThan) -> translate.Exp:
-        exp1: translate.Exp = element.left_side_exp.accept_ir(self)
-        exp2: translate.Exp = element.right_side_exp.accept_ir(self)
+        exp1: translate.Exp = element.left_side_exp.accept_ir(self).un_ex()
+        exp2: translate.Exp = element.right_side_exp.accept_ir(self).un_ex()
         
-        diff = tree.BINOP(tree.BINOP.MINUS, exp2.un_ex(), exp1.un_ex())
+        diff = tree.BINOP(tree.BINOP.MINUS, exp2, exp1)
         
         return translate.Exp(diff)
 
-    @abstractmethod
     def visit_plus(self, element: Plus) -> translate.Exp:
-        exp1: translate.Exp = element.left_side_exp.accept_ir(self)
-        exp2: translate.Exp = element.right_side_exp.accept_ir(self)
+        exp1: translate.Exp = element.left_side_exp.accept_ir(self).un_ex()
+        exp2: translate.Exp = element.right_side_exp.accept_ir(self).un_ex()
         
-        binop = tree.BINOP(tree.BINOP.PLUS, exp1.un_ex(), exp2.un_ex())
+        binop = tree.BINOP(tree.BINOP.PLUS, exp1, exp2)
         
         return translate.Exp(binop)
 
-    @abstractmethod
     def visit_minus(self, element: Minus) -> translate.Exp:
-        exp1: translate.Exp = element.left_side_exp.accept_ir(self)
-        exp2: translate.Exp = element.right_side_exp.accept_ir(self)
+        exp1: translate.Exp = element.left_side_exp.accept_ir(self).un_ex()
+        exp2: translate.Exp = element.right_side_exp.accept_ir(self).un_ex()
         
-        binop = tree.BINOP(tree.BINOP.MINUS, exp1.un_ex(), exp2.un_ex())
+        binop = tree.BINOP(tree.BINOP.MINUS, exp1, exp2)
         
         return translate.Exp(binop)
 
-    @abstractmethod
     def visit_times(self, element: Times) -> translate.Exp:
-        exp1: translate.Exp = element.left_side_exp.accept_ir(self)
-        exp2: translate.Exp = element.right_side_exp.accept_ir(self)
+        exp1: translate.Exp = element.left_side_exp.accept_ir(self).un_ex()
+        exp2: translate.Exp = element.right_side_exp.accept_ir(self).un_ex()
         
-        binop = tree.BINOP(tree.BINOP.MUL, exp1.un_ex(), exp2.un_ex())
+        binop = tree.BINOP(tree.BINOP.MUL, exp1, exp2)
         
         return translate.Exp(binop)
 
@@ -1760,10 +1756,24 @@ class TranslateVisitor(IRVisitor):
     def visit_array_length(self, element: ArrayLength) -> translate.Exp:
         pass
 
-    @abstractmethod
+    #@abstractmethod
     def visit_call(self, element: Call) -> translate.Exp:
-        pass
+        aux_class = None
+        list_exp: tree.ExpList
+        for index in range(element.arg_list.size()-1, 0):
+            list_exp = tree.ExpList(element.arg_list.element_at(index).accept_ir(self).un_ex(), list_exp)
 
+        list_exp = tree.ExpList(element.callee_exp.accept_ir(self).un_ex())
+        
+        if isinstance(element.callee_exp, self):
+            aux_class = self.symbol_table.curr_class
+        
+        if isinstance(element.callee_exp, IdentifierExp):
+            symbol = Symbol.symbol(IdentifierExp(element.callee_exp))
+
+            if isinstance(self.symbol_table.curr_method(symbol), IdentifierType):
+                pass
+            
     @abstractmethod
     def visit_integer_literal(self, element: IntegerLiteral) -> translate.Exp:
         pass
