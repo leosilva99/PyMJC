@@ -1550,7 +1550,7 @@ class TranslateVisitor(IRVisitor):
         return None
 
 
-    def visit_class_decl_extends(self, element: ClassDeclExtends) -> translate.Exp:
+    def visit_class_decl_extends(self, element: ClassDeclExtends) -> translate.Exp:      
         return None
 
     def visit_class_decl_simple(self, element: ClassDeclSimple) -> translate.Exp:
@@ -1614,17 +1614,14 @@ class TranslateVisitor(IRVisitor):
 
     
     def visit_int_array_type(self, element: IntArrayType) -> translate.Exp:
-        element.accept_ir(self)
         return None
 
     
     def visit_boolean_type(self, element: BooleanType) -> translate.Exp:
-        element.accept_ir(self)
         return None
 
     
     def visit_integer_type(self, element: IntegerType) -> translate.Exp:
-        element.accept_ir(self)
         return None
 
     
@@ -1683,9 +1680,15 @@ class TranslateVisitor(IRVisitor):
         
         return translate.Exp(tree.ESEQ(mainSeq, tree.CONST(0)))
 
-    @abstractmethod
     def visit_print(self, element: Print) -> translate.Exp:
-        exp: tree.Exp = element.print_exp.accept_ir(self)
+        exp_print: translate.Exp = element.print_exp.accept_ir(self)
+        
+        exps = List[tree.Exp]
+        exps.append(exp_print)
+        
+        exp: translate.Exp = self.current_frame.external_call('print', exps)
+        
+        return exp
 
     def visit_assign(self, element: Assign) -> translate.Exp:
         var: translate.Exp = element.left_side_id.accept_ir(self)
@@ -1694,30 +1697,60 @@ class TranslateVisitor(IRVisitor):
 
         return translate.Exp(tree.ESEQ(assign, tree.CONST(0))) 
 
-    @abstractmethod
     def visit_array_assign(self, element: ArrayAssign) -> translate.Exp:
-        pass
+        exp_name: translate.Exp = element.array_name_id.accept_ir(self).un_ex()
+        exp1: translate.Exp = element.array_exp.accept_ir()
+        exp2: translate.Exp = element.right_side_exp.accept_ir()
+        
+        mult = tree.BINOP(tree.BINOP.MUL, exp1.un_ex(), tree.CONST(self.current_frame.word_size()))
+        sum = tree.BINOP(tree.BINOP.PLUS, exp_name, mult)
+        move = tree.MOVE(tree.MEM(sum), exp2)
+        
+        return translate.Exp(tree.ESEQ(move, tree.CONST(0)))
 
-    @abstractmethod
     def visit_and(self, element: And) -> translate.Exp:
         exp1: translate.Exp = element.left_side_exp.accept_ir(self)
         exp2: translate.Exp = element.right_side_exp.accept_ir(self)
         
+        binop = tree.BINOP(tree.BINOP.AND, exp1.un_ex(), exp2.un_ex())
+        
+        return translate.Exp(binop)
+    
     @abstractmethod
     def visit_less_than(self, element: LessThan) -> translate.Exp:
-        pass
+        exp1: translate.Exp = element.left_side_exp.accept_ir(self)
+        exp2: translate.Exp = element.right_side_exp.accept_ir(self)
+        
+        diff = tree.BINOP(tree.BINOP.MINUS, exp2.un_ex(), exp1.un_ex())
+        
+        return translate.Exp(diff)
 
     @abstractmethod
     def visit_plus(self, element: Plus) -> translate.Exp:
-        pass
+        exp1: translate.Exp = element.left_side_exp.accept_ir(self)
+        exp2: translate.Exp = element.right_side_exp.accept_ir(self)
+        
+        binop = tree.BINOP(tree.BINOP.PLUS, exp1.un_ex(), exp2.un_ex())
+        
+        return translate.Exp(binop)
 
     @abstractmethod
     def visit_minus(self, element: Minus) -> translate.Exp:
-        pass
+        exp1: translate.Exp = element.left_side_exp.accept_ir(self)
+        exp2: translate.Exp = element.right_side_exp.accept_ir(self)
+        
+        binop = tree.BINOP(tree.BINOP.MINUS, exp1.un_ex(), exp2.un_ex())
+        
+        return translate.Exp(binop)
 
     @abstractmethod
     def visit_times(self, element: Times) -> translate.Exp:
-        pass
+        exp1: translate.Exp = element.left_side_exp.accept_ir(self)
+        exp2: translate.Exp = element.right_side_exp.accept_ir(self)
+        
+        binop = tree.BINOP(tree.BINOP.MUL, exp1.un_ex(), exp2.un_ex())
+        
+        return translate.Exp(binop)
 
     @abstractmethod
     def visit_array_lookup(self, element: ArrayLookup) -> translate.Exp:
