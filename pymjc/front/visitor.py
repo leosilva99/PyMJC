@@ -1607,31 +1607,50 @@ class TranslateVisitor(IRVisitor):
 
     @abstractmethod
     def visit_formal(self, element: Formal) -> translate.Exp:
-        pass
+        element.name_id.accept_ir(self)
+        element.type.accept_ir(self)
+        self.current_frame.alloc_local(False)
+        return None
 
     @abstractmethod
     def visit_int_array_type(self, element: IntArrayType) -> translate.Exp:
-        pass
+        element.accept_ir(self)
+        return None
 
     @abstractmethod
     def visit_boolean_type(self, element: BooleanType) -> translate.Exp:
-        pass
+        element.accept_ir(self)
+        return None
 
     @abstractmethod
     def visit_integer_type(self, element: IntegerType) -> translate.Exp:
-        pass
+        element.accept_ir(self)
+        return None
 
     @abstractmethod
     def visit_identifier_type(self, element: IdentifierType) -> translate.Exp:
-        pass
+        return None
 
     @abstractmethod
     def visit_block(self, element: Block) -> translate.Exp:
-        pass
+        
+        stm = tree.CONST(0)
+        
+        for index in range(element.statement_list.size()):
+            expr = tree.EXP(element.statement_list.element_at(index).accept_ir(self).un_ex())
+            seq = tree.SEQ(tree.EXP(stm), expr)
+            stm = tree.ESEQ(seq, tree.CONST(0))
+        
+        return tree.Exp(stm)
 
     @abstractmethod
     def visit_if(self, element: If) -> translate.Exp:
-        pass
+        exp: tree.Exp = element.condition_exp.accept_ir(self)
+        stm1: tree.Stm = element.if_statement.accept_ir(self).un_ex()
+        stm2: tree.Stm = element.else_statement.accept_ir(self).un_ex()
+        
+    
+        
   
     @abstractmethod
     def visit_while(self, element: While) -> translate.Exp:
@@ -1654,8 +1673,9 @@ class TranslateVisitor(IRVisitor):
 
     @abstractmethod
     def visit_and(self, element: And) -> translate.Exp:
-        pass
-
+        exp1: translate.Exp = element.left_side_exp.accept_ir(self)
+        exp2: translate.Exp = element.right_side_exp.accept_ir(self)
+        
     @abstractmethod
     def visit_less_than(self, element: LessThan) -> translate.Exp:
         pass
