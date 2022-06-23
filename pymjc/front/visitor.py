@@ -1,11 +1,12 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
+from ctypes import sizeof
 import enum
 from typing import List
 from pymjc.back.assem import MOVE
 
 from pymjc.front.ast import *
-from pymjc.front.frame import Frame
+from pymjc.front.frame import Access, Frame
 from pymjc.front import translate
 from pymjc.front import tree #CONST, Stm, MOVE
 from pymjc.front.visitorkinds import *
@@ -1549,8 +1550,16 @@ class TranslateVisitor(IRVisitor):
 
         return None
 
-    @abstractmethod
-    def visit_class_decl_extends(self, element: ClassDeclExtends) -> translate.Exp:      
+    def visit_class_decl_extends(self, element: ClassDeclExtends) -> translate.Exp:
+        self.symbol_table.set_curr_class(element.class_name_id)
+        element.super_class_name_id.accept_ir(self)
+        
+        for index in range(element.method_decl_list.size()):
+            element.method_decl_list.element_at(index).accept_ir()
+            
+        for index in range(element.var_decl_list.size()):
+            element.var_decl_list.element_at(index).accept_ir()
+              
         return None
 
     def visit_class_decl_simple(self, element: ClassDeclSimple) -> translate.Exp:
@@ -1605,30 +1614,23 @@ class TranslateVisitor(IRVisitor):
         self.var_access = {}
         return None
 
-
     def visit_formal(self, element: Formal) -> translate.Exp:
         element.name_id.accept_ir(self)
         element.type.accept_ir(self)
         self.current_frame.alloc_local(False)
         return None
 
-    
     def visit_int_array_type(self, element: IntArrayType) -> translate.Exp:
-        #element.accept_type(self)
         return None
-
     
     def visit_boolean_type(self, element: BooleanType) -> translate.Exp:
         return None
 
-    
     def visit_integer_type(self, element: IntegerType) -> translate.Exp:
         return None
-
     
     def visit_identifier_type(self, element: IdentifierType) -> translate.Exp:
         return None
-
 
     def visit_block(self, element: Block) -> translate.Exp:
         stm = tree.CONST(0)
@@ -1639,7 +1641,6 @@ class TranslateVisitor(IRVisitor):
             stm = tree.ESEQ(seq, tree.CONST(0))
         
         return translate.Exp(stm)
-
 
     def visit_if(self, element: If) -> translate.Exp:
         exp: tree.Exp = element.condition_exp.accept_ir(self)
@@ -1661,7 +1662,6 @@ class TranslateVisitor(IRVisitor):
         
         return translate.Exp(tree.ESEQ(mainSeq, tree.CONST(0)))
         
-
     def visit_while(self, element: While) -> translate.Exp:
         exp: translate.Exp = element.condition_exp.accept_ir(self)
         stm: tree.EXP = element.statement.accept_ir(self).un_ex()
@@ -1749,7 +1749,6 @@ class TranslateVisitor(IRVisitor):
         
         return translate.Exp(binop)
 
-    #
     def visit_array_lookup(self, element: ArrayLookup) -> translate.Exp:
         exp1: translate.Exp = element.accept_ir(self)
         exp2: translate.Exp = element.accept_ir(self)
@@ -1760,14 +1759,15 @@ class TranslateVisitor(IRVisitor):
 
         return translate.Exp(tree.MEM(plus2))
 
-    #
     def visit_array_length(self, element: ArrayLength) -> translate.Exp:
         exp: translate.Exp = element.accept_ir(self)
         return translate.Exp(tree.MEM(exp.un_ex()))
 
-    #@abstractmethod
+    #
     def visit_call(self, element: Call) -> translate.Exp:
-        aux_class = None
+        aux_classe = None
+        class_name = None
+        
         list_exp: tree.ExpList
         for index in range(element.arg_list.size()-1, 0):
             list_exp = tree.ExpList(element.arg_list.element_at(index).accept_ir(self).un_ex(), list_exp)
@@ -1775,48 +1775,85 @@ class TranslateVisitor(IRVisitor):
         list_exp = tree.ExpList(element.callee_exp.accept_ir(self).un_ex())
         
         if isinstance(element.callee_exp, self):
-            aux_class = self.symbol_table.curr_class
+            aux_classe = self.symbol_table.curr_class
         
         if isinstance(element.callee_exp, IdentifierExp):
-            symbol = Symbol.symbol(IdentifierExp(element.callee_exp))
+            callee_exp_aux: IdentifierExp = element.callee_exp
+            symbol = Symbol.symbol(callee_exp_aux.name)
 
-            if isinstance(self.symbol_table.curr_method(symbol), IdentifierType):
-                pass
+            if isinstance(self.symbol_table.curr_method.get_local_by_name(symbol.name), IdentifierType):
+                typ = self.symbol_table.curr_method.get_local_by_name(symbol.name)
+                typ_aux: IdentifierType = typ
+                class_name = typ_aux.name
             
-    @abstractmethod
+            elif isinstance(self.symbol_table.curr_method.get_param_by_name(symbol.name), IdentifierType):
+                typ = self.symbol_table.curr_method.get_param_by_name(symbol.name)
+                typ_aux: IdentifierType = typ
+                class_name = typ_aux.name
+            
+            elif isinstance(self.symbol_table.curr_class.get_field(symbol.name), IdentifierType):
+                typ = self.symbol_table.curr_class.get_field(symbol.name)
+                typ_aux: IdentifierType = typ
+                class_name = typ_aux.name
+        
+        if isinstance(element.callee_exp, Call):
+            #aux_classe = self.symbol_table.curr_class
+            
+            #aux_classe2 = self.symbol_table.get_class_entry(self.symbol_table.curr_class_name)
+            #aux_method = aux_classe2.get_method(element.callee_name_id.name)
+            #aux_classe = self.symbol_table.get_class_entry(Symbol.symbol(aux_classe2.))
+            pass
+        
+        if isinstance(element.callee_exp, NewObject):
+            aux_classe = self.symbol_table.get_class_entry(element.callee_exp.object_name_id.name)
+        
+        if(not aux_classe == None):
+            class_name = self.symbol_table.curr_class_name
+        
+        return translate.Exp(tree.CALL(tree.NAME(tree.Label(class_name+'$'+element.callee_name_id)), list_exp))
+            
     def visit_integer_literal(self, element: IntegerLiteral) -> translate.Exp:
-        #constt = tree.CONST(self)
-        #return translate.Exp(constt)
-        pass
+        constt = tree.CONST(element.value)
+        return translate.Exp(constt)
 
-    #
     def visit_true_exp(self, element: TrueExp) -> translate.Exp:
         constt = tree.CONST(1)
         return translate.Exp(constt)
 
-    #
     def visit_false_exp(self, element: FalseExp) -> translate.Exp:
         constt = tree.CONST(0)
         return translate.Exp(constt)
 
-    @abstractmethod
     def visit_identifier_exp(self, element: IdentifierExp) -> translate.Exp:
+        ac: Access = self.current_frame.alloc_local(False)
+        return translate.Exp(ac.exp(tree.TEMP(self.current_frame.FP())))
 
-        pass
-
-    #
     def visit_this(self, element: This) -> translate.Exp:
         return translate.Exp(tree.MEM(tree.TEMP(self.current_frame.FP())))
 
-    @abstractmethod
     def visit_new_array(self, element: NewArray) -> translate.Exp:
-        pass
+        exp1: translate.Exp = element.new_exp.accept_ir(self).un_ex()
+        sum1 = tree.BINOP(tree.BINOP.PLUS, exp1, tree.CONST(1))
+        exp2: tree.Exp = tree.BINOP(tree.BINOP.MUL, sum1, tree.CONST(self.current_frame.word_size()))
 
-    @abstractmethod
-    def visit_new_object(self, element: NewObject) -> translate.Exp:
-        pass
-
+        params = List[tree.Exp]
+        params.append(exp2)
+        return_exp: tree.Exp = self.current_frame.external_call('initArray', params)
+        return translate.Exp(return_exp)
+        
     #
+    def visit_new_object(self, element: NewObject) -> translate.Exp:
+        classe = self.symbol_table.get_class_entry(element.object_name_id)
+        size = sizeof(classe.get_fields().keys())
+        
+        params = List[tree.Exp]
+        binop = tree.BINOP(tree.BINOP.MUL, tree.CONST(1+size), tree.CONST(self.current_frame.word_size()))
+        params.append(binop)
+        
+        return_exp: tree.Exp = self.current_frame.external_call('malloc', params)
+        
+        return translate.Exp(return_exp)
+    
     def visit_not(self, element: Not) -> translate.Exp:
         exp: translate.Exp = element.negated_exp.accept_ir(self)
         
@@ -1824,8 +1861,6 @@ class TranslateVisitor(IRVisitor):
 
         return translate.Exp(binop)
 
-    @abstractmethod
     def visit_identifier(self, element: Identifier) -> translate.Exp:
-        #acc: Access = self.current_frame.alloc_local(False)
-        #return translate.Exp(acc.exp(tree.TEMP(self.current_frame.FP())))
-        pass
+        acc: Access = self.current_frame.alloc_local(False)
+        return translate.Exp(acc.exp(tree.TEMP(self.current_frame.FP())))
