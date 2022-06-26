@@ -82,15 +82,15 @@
 
 4. O programa passa nos testes automatizados?
     
-    > Escreva sua resposta aqui
+    > Sim.
 
 5. Algum erro de execução foi encontrado para alguma das entradas? Quais?
     
-    > Escreva sua resposta aqui
+    > Nenhum erro de execução foi encontrado.
 
 6. Quais as dificuldades encontradas para realização da etapa do projeto?
     
-    > Tradução de algumas instruções para o código intermediário.
+    > Tradução de algumas instruções para o código intermediário, principalmente o Call.
     > Entender como percorrer e acessar algumas classes e métodos.
 
 7. Qual a participação de cada membro da equipe na etapa de execução?
