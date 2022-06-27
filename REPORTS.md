@@ -74,11 +74,11 @@
 
 2. A etapa foi completamente ou parcialmente concluída?
 
-    > Escreva sua resposta aqui
+    > Parcialmente concluída.
 
 3. No caso de parcialmente concluída, o que não foi concluído?
 
-    > Escreva sua resposta aqui
+    > Alguns visitors, como o call, não foram concluídos.
 
 4. O programa passa nos testes automatizados?
     
