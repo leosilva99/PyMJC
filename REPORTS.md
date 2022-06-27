@@ -91,7 +91,7 @@
 6. Quais as dificuldades encontradas para realização da etapa do projeto?
     
     > Tradução de algumas instruções para o código intermediário, principalmente o Call.
-    > Entender como percorrer e acessar algumas classes e métodos.
+
 
 7. Qual a participação de cada membro da equipe na etapa de execução?
     
