@@ -4,7 +4,7 @@ Este repositório tem como objetivo fazer as entregas do projeto da disciplina d
 
 # Equipe Responável
 
-Os seguintes alunos (equipe XXXXX) são responsáveis pelo projeto: 
+Os seguintes alunos (equipe 5) são responsáveis pelo projeto: 
 
 -  Mátricula: 415235 | Aluno: Leonardo Oliveira Silva 
 -  Mátricula: 418097 | Aluno: Raynara dos Santos Silva
