@@ -1,19 +1,5 @@
 from __future__ import annotations
 from abc import abstractmethod
-<<<<<<< HEAD
-from pymjc.back import graph
-from pymjc.back import flowgraph
-from pymjc.front import temp
-
-class Color(temp.TempMap):
-    def __init__(self, ig: InterferenceGraph, initial: temp.TempMap, registers: temp.TempList):
-        pass
-    
-    def spills(self) -> temp.TempList:
-        return None
-
-    def temp_map(self, temp: temp.Temp) -> str:
-=======
 import sys
 from typing import Set
 from pymjc.back import assem, flowgraph, graph
@@ -42,7 +28,6 @@ class Color(temp.TempMap):
 
     def temp_map(self, temp: temp.Temp) -> str:
         #TODO
->>>>>>> upstream/main
         return temp.to_string()
 
 class InterferenceGraph(graph.Graph):
@@ -67,19 +52,6 @@ class Liveness (InterferenceGraph):
 
     def __init__(self, flow: flowgraph.FlowGraph):
         self.live_map = {}
-<<<<<<< HEAD
-
-
-    def tnode(self, temp:temp.Temp) -> graph.Node:
-        return None
-
-
-    def gtemp(self, node: graph.Node) -> temp.Temp:
-        return None
-
-    def moves(self) -> MoveList:
-        return None
-=======
         
         #Flow Graph
         self.flowgraph: flowgraph.FlowGraph = flow
@@ -218,7 +190,6 @@ class Edge():
 
         return requested_edge
 
->>>>>>> upstream/main
 
 
 class MoveList():
