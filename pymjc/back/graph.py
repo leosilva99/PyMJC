@@ -1,6 +1,9 @@
 from __future__ import annotations
 import sys
+<<<<<<< HEAD
 from typing_extensions import Self
+=======
+>>>>>>> upstream/main
 
 class Node():
     
