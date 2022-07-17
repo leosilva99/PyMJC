@@ -1,11 +1,22 @@
 from __future__ import annotations
 from abc import ABC, abstractmethod
+#from ctypes import sizeof
 import enum
 from typing import List
+<<<<<<< HEAD
+#from pymjc.back.assem import MOVE
+
+from pymjc.front.ast import *
+from pymjc.front.frame import Access, Frame
+from pymjc.front import translate
+from pymjc.front import tree #CONST, Stm, MOVE
+from pymjc.front import temp
+=======
 
 from pymjc.front.ast import *
 from pymjc.front.frame import Access, Frame
 from pymjc.front import temp, translate, tree
+>>>>>>> upstream/main
 from pymjc.front.visitorkinds import *
 from pymjc.front.symbol import *
 from pymjc.log import MJLogger
@@ -1548,6 +1559,23 @@ class TranslateVisitor(IRVisitor):
 
         return None
 
+<<<<<<< HEAD
+    def visit_class_decl_extends(self, element: ClassDeclExtends) -> translate.Exp:
+        self.symbol_table.set_curr_class(element.class_name_id)
+        element.super_class_name_id.accept_ir(self)
+        
+        for index in range(element.method_decl_list.size()):
+            element.method_decl_list.element_at(index).accept_ir()
+            
+        for index in range(element.var_decl_list.size()):
+            element.var_decl_list.element_at(index).accept_ir()
+              
+        return None
+
+    def visit_class_decl_simple(self, element: ClassDeclSimple) -> translate.Exp:
+        element.class_name_id.accept_ir(self)
+        self.symbol_table.set_curr_class(element.class_name_id.name)
+=======
 
     def visit_class_decl_extends(self, element: ClassDeclExtends) -> translate.Exp:
         self.symbol_table.set_curr_class(element.class_name_id.name)
@@ -1565,6 +1593,7 @@ class TranslateVisitor(IRVisitor):
     def visit_class_decl_simple(self, element: ClassDeclSimple) -> translate.Exp:
         self.symbol_table.set_curr_class(element.class_name_id.name)
         element.class_name_id.accept_ir(self)
+>>>>>>> upstream/main
 
         for index in range(element.var_decl_list.size()):
             element.var_decl_list.element_at(index).accept_ir(self)
@@ -1614,26 +1643,44 @@ class TranslateVisitor(IRVisitor):
         self.var_access = {}
         return None
 
+<<<<<<< HEAD
+    def visit_formal(self, element: Formal) -> translate.Exp:
+        element.name_id.accept_ir(self)
+        element.type.accept_ir(self)
+        self.current_frame.alloc_local(False)
+=======
     
     def visit_formal(self, element: Formal) -> translate.Exp:
         element.type.accept_ir(self)
         element.name_id.accept_ir(self)
+>>>>>>> upstream/main
         return None
 
     def visit_int_array_type(self, element: IntArrayType) -> translate.Exp:
         return None
+<<<<<<< HEAD
+    
+=======
 
+>>>>>>> upstream/main
     def visit_boolean_type(self, element: BooleanType) -> translate.Exp:
         return None
 
     def visit_integer_type(self, element: IntegerType) -> translate.Exp:
         return None
+<<<<<<< HEAD
+    
+    def visit_identifier_type(self, element: IdentifierType) -> translate.Exp:
+        return None
+    
+=======
 
 
     def visit_identifier_type(self, element: IdentifierType) -> translate.Exp:
         return None
 
 
+>>>>>>> upstream/main
     def visit_block(self, element: Block) -> translate.Exp:
         if(element.statement_list.size() == 0):
             return translate.Nx(None)
@@ -1650,8 +1697,12 @@ class TranslateVisitor(IRVisitor):
             stm = tree.SEQ(stm, exp.un_nx())
 
         return translate.Nx(stm)
+<<<<<<< HEAD
+    
+=======
 
        
+>>>>>>> upstream/main
     def visit_if(self, element: If) -> translate.Exp:
         exp: translate.Exp = element.condition_exp.accept_ir(self)
         if_stm: translate.Exp = element.if_statement.accept_ir(self)
@@ -1670,8 +1721,12 @@ class TranslateVisitor(IRVisitor):
                                         tree.JUMP(end_if_label)),
                                     tree.SEQ(tree.LABEL(false_label), else_stm.un_nx())), 
                                 tree.LABEL(end_if_label)))
+<<<<<<< HEAD
+        
+=======
   
 
+>>>>>>> upstream/main
     def visit_while(self, element: While) -> translate.Exp:
         test: temp.Label = temp.Label()
         true_label: temp.Label = temp.Label()
@@ -1687,6 +1742,16 @@ class TranslateVisitor(IRVisitor):
                                     tree.SEQ(tree.LABEL(true_label),body.un_nx())), 
                                 tree.LABEL(false_label)))
 
+<<<<<<< HEAD
+    def visit_print(self, element: Print) -> translate.Exp:
+        exp_print: translate.Exp = element.print_exp.accept_ir(self)
+        
+        exps = List[tree.Exp]
+        exps.add(exp_print.un_ex())
+        
+        exp: translate.Exp = self.current_frame.external_call('print', exps)
+        
+=======
 
 
     def visit_print(self, element: Print) -> translate.Exp:
@@ -1697,11 +1762,22 @@ class TranslateVisitor(IRVisitor):
         
         exp: tree.Exp = self.current_frame.external_call("print", args)
 
+>>>>>>> upstream/main
         return translate.Nx(tree.MOVE(tree.TEMP(temp.Temp()), exp))
 
     def visit_assign(self, element: Assign) -> translate.Exp:
         var: translate.Exp = element.left_side_id.accept_ir(self)
         exp: translate.Exp = element.right_side_exp.accept_ir(self)
+<<<<<<< HEAD
+
+        if (isinstance(var.un_ex(), tree.TEMP)):
+            return translate.Nx(tree.MOVE (var.un_ex(),  exp.un_ex()))
+        
+        else:
+            temp: temp.Temp = temp.Temp()
+            return translate.Nx(tree.MOVE(tree.MEM(tree.BINOP.PLUS, tree.TEMP(temp), var.un_ex())), exp.un_ex()) 
+    
+=======
         
         if (isinstance(var.un_ex(), tree.TEMP)):
             return translate.Nx(tree.MOVE (var.un_ex(),  exp.un_ex()))
@@ -1710,6 +1786,7 @@ class TranslateVisitor(IRVisitor):
             return translate.Nx(tree.MOVE(tree.MEM(tree.BINOP.PLUS, tree.TEMP(temp), var.un_ex())), exp.un_ex())
 
 
+>>>>>>> upstream/main
     def visit_array_assign(self, element: ArrayAssign) -> translate.Exp:
         word_size = self.current_frame.word_size()
         array_exp: tree.Exp = element.array_name_id.accept_ir(self).un_ex()
@@ -1759,6 +1836,46 @@ class TranslateVisitor(IRVisitor):
                                tree.BINOP(tree.BINOP.PLUS, index_exp,tree.CONST(word_size)))), 
                       value_exp))
 
+<<<<<<< HEAD
+    def visit_and(self, element: And) -> translate.Exp:
+        exp1: translate.Exp = element.left_side_exp.accept_ir(self)
+        exp2: translate.Exp = element.right_side_exp.accept_ir(self)
+        
+        binop: tree.BINOP = tree.BINOP(tree.BINOP.AND, exp1.un_ex(), exp2.un_ex())
+        
+        return translate.Ex(binop)
+    
+    def visit_less_than(self, element: LessThan) -> translate.Exp:
+        exp1: translate.Exp = element.left_side_exp.accept_ir(self)
+        exp2: translate.Exp = element.right_side_exp.accept_ir(self)
+        
+        return translate.RelCx(tree.CJUMP.LT, exp1.un_ex(), exp2.un_ex())
+
+    def visit_plus(self, element: Plus) -> translate.Exp:
+        exp1: translate.Exp = element.left_side_exp.accept_ir(self)
+        exp2: translate.Exp = element.right_side_exp.accept_ir(self)
+        
+        binop: tree.BINOP = tree.BINOP(tree.BINOP.PLUS, exp1.un_ex(), exp2.un_ex())
+        
+        return translate.Ex(binop)
+
+    def visit_minus(self, element: Minus) -> translate.Exp:
+        exp1: translate.Exp = element.left_side_exp.accept_ir(self)
+        exp2: translate.Exp = element.right_side_exp.accept_ir(self)
+        
+        binop: tree.BINOP = tree.BINOP(tree.BINOP.MINUS, exp1.un_ex(), exp2.un_ex())
+        
+        return translate.Ex(binop)
+
+    def visit_times(self, element: Times) -> translate.Exp:
+        exp1: translate.Exp = element.left_side_exp.accept_ir(self)
+        exp2: translate.Exp = element.right_side_exp.accept_ir(self)
+        
+        binop: tree.BINOP = tree.BINOP(tree.BINOP.MUL, exp1.un_ex(), exp2.un_ex())
+        
+        return translate.Ex(binop)
+
+=======
 
     def visit_and(self, element: And) -> translate.Exp:
         left_side_exp: translate.Exp = element.left_side_exp.accept_ir(self)
@@ -1801,6 +1918,7 @@ class TranslateVisitor(IRVisitor):
         return translate.Ex(binop)
 
 
+>>>>>>> upstream/main
     def visit_array_lookup(self, element: ArrayLookup) -> translate.Exp:
         t_index: temp.Temp = temp.Temp()
         t_size: temp.Temp() = temp.Temp()
@@ -1840,11 +1958,18 @@ class TranslateVisitor(IRVisitor):
         
         return translate.Ex(tree.ESEQ(stm_02,tree.TEMP(t)))
 
+<<<<<<< HEAD
+    def visit_array_length(self, element: ArrayLength) -> translate.Exp:
+        exp: translate.Exp = element.length_exp.accept_ir(self)
+
+        return translate.Ex(tree.MEM(exp.un_ex()))
+=======
 
     def visit_array_length(self, element: ArrayLength) -> translate.Exp:
         exp: translate.Exp = element.length_exp.accept_ir(self)
         mem: tree.MEM = tree.MEM(exp.un_ex())
         return translate.Ex(mem)
+>>>>>>> upstream/main
 
     def visit_call(self, element: Call) -> translate.Exp:
         class_exp: translate.Exp = element.callee_exp.accept_ir(self)
@@ -1862,6 +1987,20 @@ class TranslateVisitor(IRVisitor):
         arg_list = Converter.to_ExpList(args)
         fn_call: tree.CALL = tree.CALL(tree.NAME(fn_label), arg_list)
         return translate.Ex(fn_call)
+<<<<<<< HEAD
+            
+    def visit_integer_literal(self, element: IntegerLiteral) -> translate.Exp:
+        constt = tree.CONST(element.value)
+        return translate.Ex(constt)
+
+    def visit_true_exp(self, element: TrueExp) -> translate.Exp:
+        constt = tree.CONST(1)
+        return translate.Ex(constt)
+
+    def visit_false_exp(self, element: FalseExp) -> translate.Exp:
+        constt = tree.CONST(0)
+        return translate.Ex(constt)
+=======
 
 
     def visit_integer_literal(self, element: IntegerLiteral) -> translate.Exp:
@@ -1876,33 +2015,54 @@ class TranslateVisitor(IRVisitor):
         false_const = tree.CONST(0)
         return translate.Ex(false_const)
 
+>>>>>>> upstream/main
 
     def visit_identifier_exp(self, element: IdentifierExp) -> translate.Exp:
         type: Type  = self.symbol_table.curr_method.get_param_by_name(element.name)
         
         if(type is None):
             type = self.symbol_table.curr_method.get_local_by_name(element.name)
+<<<<<<< HEAD
+            
+=======
+>>>>>>> upstream/main
             if(type is None):
                 type = self.symbol_table.curr_class.get_field(element.name)
         
         if (isinstance(type, IdentifierType)):
             self.call_class_name = type.name
+<<<<<<< HEAD
+
+        #ac: Access = self.current_frame.alloc_local(False)
+=======
             
+>>>>>>> upstream/main
         access: Access = self.var_access.get(element.name)
         if (access is None):
             access = self.current_frame.alloc_local(False)
             self.var_access[element.name] = access
+<<<<<<< HEAD
+        
+=======
 
+>>>>>>> upstream/main
         return translate.Ex(access.exp(tree.TEMP(self.current_frame.FP())))
 
     def visit_this(self, element: This) -> translate.Exp:
         self.call_class_name = self.symbol_table.curr_class_name
         return translate.Ex(tree.MEM(tree.TEMP(self.current_frame.FP())))
 
+<<<<<<< HEAD
+    def visit_new_array(self, element: NewArray) -> translate.Exp:
+        exp: translate.Exp = element.new_exp.accept_ir(self)
+        word_size = self.current_frame.word_size()
+        
+=======
 
     def visit_new_array(self, element: NewArray) -> translate.Exp:
         exp: translate.Exp = element.new_exp.accept_ir(self)
         word_size = self.current_frame.word_size()
+>>>>>>> upstream/main
         # computing array size
         num_of_items: tree.BINOP = tree.BINOP(tree.BINOP.PLUS, exp.un_ex(), tree.CONST(1))
         array_size: tree.Exp = tree.BINOP(tree.BINOP.MUL, num_of_items, tree.CONST(word_size))
@@ -1937,6 +2097,35 @@ class TranslateVisitor(IRVisitor):
 
 	       
         return translate.Ex(tree.ESEQ(tree.SEQ(stm_01,stm_02), tree.TEMP(temp_01)))
+<<<<<<< HEAD
+    
+    def visit_new_object(self, element: NewObject) -> translate.Exp:
+        classe = self.symbol_table.get_class_entry(element.object_name_id.name)
+        size: int = len(classe.get_fields().keys())
+        
+        params = List[tree.Exp]
+        binop = tree.BINOP(tree.BINOP.MUL, tree.CONST(1+size), tree.CONST(self.current_frame.word_size()))
+        params.append(binop)
+        
+        return_exp: tree.Exp = self.current_frame.external_call('malloc', params)
+        
+        return translate.Ex(tree.MOVE(tree.TEMP(temp.Temp()), return_exp))
+    
+    def visit_not(self, element: Not) -> translate.Exp:
+        exp: translate.Exp = element.negated_exp.accept_ir(self)
+        
+        binop: tree.BINOP = tree.BINOP(tree.BINOP.XOR, tree.CONST(1), exp.un_ex())
+
+        return translate.Ex(binop)
+
+    def visit_identifier(self, element: Identifier) -> translate.Exp:
+        self.call_class_name = element.name
+        acc: Access = self.var_access.get(element.name)
+        if acc is None:    
+            acc: Access = self.current_frame.alloc_local(False)
+            self.var_access[element.name] = acc
+        return translate.Ex(acc.exp(tree.TEMP(self.current_frame.FP())))
+=======
 
 
     def visit_new_object(self, element: NewObject) -> translate.Exp:
@@ -1965,3 +2154,4 @@ class TranslateVisitor(IRVisitor):
             self.var_access[element.name] = access
         
         return translate.Ex(access.exp(tree.TEMP(self.current_frame.FP())))
+>>>>>>> upstream/main

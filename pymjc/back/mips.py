@@ -2,8 +2,15 @@ from contextlib import nullcontext
 import itertools
 from typing import List
 from pymjc.back import assem
+<<<<<<< HEAD
+from pymjc.front import frame
+from pymjc.front.symbol import Symbol
+from pymjc.front import temp
+from pymjc.front import tree
+=======
 from pymjc.front import frame, temp, tree
 from pymjc.front.symbol import Symbol
+>>>>>>> upstream/main
 from pymjc.util import BoolList
 
 class InFrame(frame.Access):

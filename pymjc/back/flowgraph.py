@@ -2,8 +2,15 @@ from __future__ import annotations
 from abc import abstractmethod
 import sys
 from typing import List
+<<<<<<< HEAD
+from pymjc.back import assem
+from pymjc.back import graph
+from pymjc.front import temp
+from pymjc.front import tree
+=======
 from pymjc.back import assem, graph
 from pymjc.front import temp, tree
+>>>>>>> upstream/main
 
 class FlowGraph (graph.Graph):
     
@@ -63,7 +70,11 @@ class AssemFlowGraph (FlowGraph):
     def __init__(self, instrs: assem.InstrList):
         self.instructions = {}
         self.labels = {}
+<<<<<<< HEAD
+        self.maping =  {}
+=======
         self.mapping =  {}
+>>>>>>> upstream/main
 
         node: graph.Node = None
         last_node: graph.Node = None
@@ -85,7 +96,11 @@ class AssemFlowGraph (FlowGraph):
                 if (label_instr is not None):
                     self.labels[node] = label_instr.label
                     for l in label_list:
+<<<<<<< HEAD
+                        self.maping[l.label] = node
+=======
                         self.mapping[l.label] = node
+>>>>>>> upstream/main
                     
                     label_list = List[assem.Instr]
                     label_instr = None
@@ -106,10 +121,17 @@ class AssemFlowGraph (FlowGraph):
                     jump_labels: temp.LabelList = oper.jumps().labels
                     while(jump_labels is not None):
                         l: temp.Label = jump_labels.head
+<<<<<<< HEAD
+                        if (self.maping.get(l) is None):
+                            self.add_edge(self.get_node_by_id(i), last_node)
+                        else:
+                            self.add_edge(self.get_node_by_id(i), self.maping.get(l))
+=======
                         if (self.mapping.get(l) is None):
                             self.add_edge(self.get_node_by_id(i), last_node)
                         else:
                             self.add_edge(self.get_node_by_id(i), self.mapping.get(l))
+>>>>>>> upstream/main
                         jump_labels = jump_labels.tail
                 i += 1
             a = a.tail
@@ -127,6 +149,12 @@ class AssemFlowGraph (FlowGraph):
         return self.instructions.get(node)
 
     def deff(self, node: graph.Node) -> temp.TempList:
+<<<<<<< HEAD
+        return self.instructions.get(node).deff()
+	
+    def use(self, node: graph.Node) -> temp.TempList:
+        return self.instructions.get(node).use()
+=======
         deff_instr: assem.Instr = self.instructions.get(node)
         if deff_instr is not None:
             return deff_instr.deff()
@@ -138,6 +166,7 @@ class AssemFlowGraph (FlowGraph):
         if use_instr is not None:
             return use_instr.use()
         return None
+>>>>>>> upstream/main
 	
     def is_move(self, node: graph.Node) -> bool:
         return isinstance(self.instructions.get(node), assem.MOVE)
