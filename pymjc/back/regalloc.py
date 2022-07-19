@@ -154,7 +154,7 @@ class Liveness (InterferenceGraph):
         pass
 
     def build_in_and_out(self):
-        node: graph.Node
+        node: graph.Node = None
         node_list: graph.NodeList = self.flowgraph.nodes()
         in_node_table_aux = {}
         out_node_table_aux = {}
@@ -171,8 +171,7 @@ class Liveness (InterferenceGraph):
                 in_node_table_aux[node] = self.in_node_table[node]
                 out_node_table_aux[node] = self.out_node_table[node]
                 
-                succ_list: graph.NodeList = node.succ()
-                for succ_node in succ_list:
+                for succ_node in node.succ():
                     self.out_node_table[node] += self.in_node_table[succ_node]
                 
                 diff: temp.TempList = set(self.out_node_table[node]).difference(self.flowgraph.deff(node))
@@ -187,10 +186,21 @@ class Liveness (InterferenceGraph):
 
                 cond = True
 
-        
     def build_interference_graph(self):
         #TODO
-        pass
+        node_list: graph.NodeList = self.flowgraph.nodes()
+
+        for node in node_list:
+            deff_node = self.flowgraph.deff(node)
+            
+            if deff_node != None:
+                for node_out in self.out_node_table[node]:
+                    if node_out == node:
+                        continue
+                    
+                    else:
+                        self.add_ndge(node, node_out)
+
 
 class Edge():
 
