@@ -68,6 +68,19 @@ class RegAlloc (temp.TempMap):
         pass
 
     def freeze(self):
+        temporaryNodeIterator: iter(graph.Node) = self.freezeWorklist.iter()
+
+    # // let u ∈ freezeWorklist
+        u: graph.Node = temporaryNodeIterator.next()
+        temporaryNodeIterator.remove()
+    # // freezeWorklist ← freezeWorklist \ {u}
+        self.freezeWorklist.remove(u)
+
+    # // simplifyWorklist ← simplifyWorklist ∪ {u}
+        self.simplifyWorklist.append(u)
+    # // FreezeMoves(u)
+        self.freezeMoves(u)
+        
         pass
 
     def selectSpill(self):
