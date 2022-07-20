@@ -160,47 +160,52 @@ class Liveness (InterferenceGraph):
         out_node_table_aux = {}
         
         for node in node_list:
-            self.in_node_table[node] = list()
-            in_node_table_aux[node] = list()
-            self.out_node_table[node] = list()
-            out_node_table_aux[node] = list()
+            self.in_node_table[node] = set()
+            in_node_table_aux[node] = set()
+            self.out_node_table[node] = set()
+            out_node_table_aux[node] = set()
 
         cond = False
         while(not cond):
             for node in node_list:
-                in_node_table_aux[node] = self.in_node_table[node]
-                out_node_table_aux[node] = self.out_node_table[node]
+                in_node_table_aux[node].update(self.in_node_table[node])
+                out_node_table_aux[node].update(self.out_node_table[node])
                 
                 for succ_node in node.succ():
-                    self.out_node_table[node] += self.in_node_table[succ_node]
+                    self.out_node_table[node].update(self.in_node_table[succ_node])
                 
-                diff: temp.TempList = set(self.out_node_table[node]).difference(self.flowgraph.deff(node))
-                self.in_node_table[node] = self.flowgraph.use(node) + diff
+                diff: Set[temp.Temp] = self.out_node_table[node].difference(set(self.flowgraph.deff(node)))
+                self.in_node_table[node].update(set(self.flowgraph.use(node)) | diff)
             
             # Verificar se in'[n] == in[n] e out'[n] == out[n] para todo n
             for node in node_list:
-                if(self.in_node_table[node] != in_node_table_aux[node] or
-                   self.out_node_table[node] != out_node_table_aux[node]):
+                if(self.in_node_table[node].difference(in_node_table_aux[node]) != None or
+                   self.out_node_table[node].difference(out_node_table_aux[node]) != None):
                    cond = False
                    break
 
                 cond = True
 
     def build_interference_graph(self):
-        #TODO
         node_list: graph.NodeList = self.flowgraph.nodes()
-
+        #interferenceGraph: graph.Graph = None
+        
+        # para cada nó de atribuição(a = ?), avaliar o tipo da instrução utilizada
+        # se a intrução não for MOVE, considerar variaveis live-out
+            # fazer a aresta da variavel do no para cada variavel live-out
+        # se for MOVE(a = c), considerar variaveis live-out
+            # fazer a aresta da variavel do no para cada variavel live-out diferente de c
+        
         for node in node_list:
-            deff_node = self.flowgraph.deff(node)
+            deff_vars: temp.TempList = self.flowgraph.deff(node)
             
-            if deff_node != None:
-                for node_out in self.out_node_table[node]:
-                    if node_out == node:
-                        continue
-                    
-                    else:
-                        self.add_ndge(node, node_out)
+            if deff_vars != None:
+                vars_out: temp.Temp = None
+                for vars_out in self.out_node_table[node]:
+                    self.add_ndge(node, self.get_node(vars_out))
+                    #interferenceGraph.add_edge(node, self.get_node(vars_out))
 
+        #return interferenceGraph
 
 class Edge():
 
