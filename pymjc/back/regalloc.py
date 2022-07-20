@@ -11,53 +11,58 @@ class RegAlloc (temp.TempMap):
         self.frame: frame.Frame = frame
         self.instrs: assem.InstrList = instr_list
         
-        preColoredNodes: graph.Node = {}
-        normalColoredNodes: graph.Node = {}
+        self.preColoredNodes: graph.Node = {}
+        self.normalColoredNodes: graph.Node = {}
 
-        initialNodes: graph.Node = {}
-        spillNodess: graph.Node = {}
-        coalesceNodes: graph.Node = {}
+        self.initialNodes: graph.Node = {}
+        self.spillNodess: graph.Node = {}
+        self.coalesceNodes: graph.Node = {}
 
-        nodeStack: graph.Node = []
+        self.nodeStack: graph.Node = []
 
-        simplifyWorklist: graph.Node = {}
-        freezeWorklist: graph.Node = {}
-        spillWorklist: graph.Node = {}
+        self.simplifyWorklist: graph.Node = {}
+        self.freezeWorklist: graph.Node = {}
+        self.spillWorklist: graph.Node = {}
 
-        coalesceMoveNodes: graph.Node = {}
-        constrainMoveNodes: graph.Node = {}
-        freezeMoveNodes: graph.Node = {}
-        worklistMoveNodes: graph.Node = {}
-        activeMoveNodes: graph.Node = {}
+        self.coalesceMoveNodes: graph.Node = {}
+        self.constrainMoveNodes: graph.Node = {}
+        self.freezeMoveNodes: graph.Node = {}
+        self.worklistMoveNodes: graph.Node = {}
+        self.activeMoveNodes: graph.Node = {}
+        
+        self.spillCost = {}
+        
+        self.adjacenceSets: graph.Node.adj() = {}
+        self.adjacenceList = {}
 
-        adjacenceList: graph.Node[graph.Node] = graph.Node()
-
-        adjacenceSets: graph.Graph.rm_edge = {}
-
-        livenessOutput: Liveness.out
-        assemFlowGraph: flowgraph.AssemFlowGraph
-
-        generatedSpillTemps: temp.Temp = {}
-
+        self.livenessOutput: Liveness.out
+        self.assemFlowGraph: flowgraph.AssemFlowGraph
+        
+        self.moveNodesList = {}
+        
+        self.nodeDegreeTable = {}
+        self.nodeAliasTable = {}
+        self.nodeColorTable = {}
+    
+        self.generatedSpillTemps: temp.Temp = {}
 
         #TODO
     
     def simplify (self):
-    # Iterator<Node> temporaryIterator = simplifyWorklist.iterator();
+        temporaryIterator: iter(graph.Node)  = self.simplifyWorklist.iter()
 
     # // let n ∈ simplifyWorklist
-    # Node n = temporaryIterator.next();
+        n: graph.Node = temporaryIterator.next()
     # // simplifyWorklist ← simplifyWorklist \ {n}
-    # temporaryIterator.remove();
-
+        temporaryIterator.remove()
     # // push(n, selectStack)
-    # nodeStack.push(n);
+        self.nodeStack.append(n)
 
     # // forall m ∈ Adjacent(n)
-    # for (Node m : Adjacent(n)) {
+        m: graph.Node
+        for m in graph.Node.adj(n):
     #   // DecrementDegree(m)
-    #   DecrementDegree(m);     
-        pass
+            self.decrementDegree(m)     
 
     def coalesce(self):
         pass
@@ -96,6 +101,10 @@ class RegAlloc (temp.TempMap):
     def rewriteProgram(self):
         pass
 
+    def decrementDegree(self):
+        pass
+    
+    
     def temp_map(self, temp: temp.Temp) -> str:
         #TODO
         str: temp  = frame.TempMap(temp)
@@ -116,6 +125,8 @@ class Color(temp.TempMap):
     def temp_map(self, temp: temp.Temp) -> str:
         #TODO
         return temp.to_string()
+
+    
 
 class InterferenceGraph(graph.Graph):
     
