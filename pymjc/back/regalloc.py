@@ -10,12 +10,151 @@ class RegAlloc (temp.TempMap):
     def __init__(self, frame: frame.Frame, instr_list: assem.InstrList):
         self.frame: frame.Frame = frame
         self.instrs: assem.InstrList = instr_list
-        #TODO
+        
+        self.preColoredNodes: graph.Node = {}
+        self.normalColoredNodes: graph.Node = {}
 
-    def temp_map(self, temp: temp.Temp) -> str:
-        #TODO
-        return temp.to_string()
+        self.initialNodes: graph.Node = {}
+        self.spillNodess: graph.Node = {}
+        self.coalesceNodes: graph.Node = {}
+
+        self.nodeStack: graph.Node = []
+
+        self.simplifyWorklist: graph.Node = {}
+        self.freezeWorklist: graph.Node = {}
+        self.spillWorklist: graph.Node = {}
+
+        self.coalesceMoveNodes: graph.Node = {}
+        self.constrainMoveNodes: graph.Node = {}
+        self.freezeMoveNodes: graph.Node = {}
+        self.worklistMoveNodes: graph.Node = {}
+        self.activeMoveNodes: graph.Node = {}
+        
+        self.spillCost = {}
+        
+        self.adjacenceSets: graph.Node.adj() = {}
+        self.adjacenceList = {}
+
+        self.livenessOutput: Liveness.out
+        self.assemFlowGraph: flowgraph.AssemFlowGraph
+        
+        self.moveNodesList = {}
+        
+        self.nodeDegreeTable = {}
+        self.nodeAliasTable = {}
+        self.nodeColorTable = {}
     
+        self.generatedSpillTemps: temp.Temp = {}
+
+        #TODO
+    
+    def simplify (self):
+        temporaryIterator: iter(graph.Node)  = self.simplifyWorklist.iter()
+
+    # // let n ∈ simplifyWorklist
+        n: graph.Node = temporaryIterator.next()
+    # // simplifyWorklist ← simplifyWorklist \ {n}
+        temporaryIterator.remove()
+    # // push(n, selectStack)
+        self.nodeStack.append(n)
+
+    # // forall m ∈ Adjacent(n)
+        m: graph.Node
+        for m in graph.Node.adj(n):
+    #   // DecrementDegree(m)
+            self.decrementDegree(m)     
+
+    def coalesce(self):
+        pass
+
+    def freeze(self):
+        temporaryNodeIterator: iter(graph.Node) = self.freezeWorklist.iter()
+
+    # // let u ∈ freezeWorklist
+        u: graph.Node = temporaryNodeIterator.next()
+        temporaryNodeIterator.remove()
+    # // freezeWorklist ← freezeWorklist \ {u}
+        self.freezeWorklist.remove(u)
+
+    # // simplifyWorklist ← simplifyWorklist ∪ {u}
+        self.simplifyWorklist.append(u)
+    # // FreezeMoves(u)
+        self.freezeMoves(u)
+
+    def selectSpill(self):
+        m: iter(graph.Node) = self.spillWorklist.iter().next()
+        v = InterferenceGraph.spill_cost(m)
+
+        a = graph.Node
+        for a in self.spillWorklist:
+           if (InterferenceGraph.spill_cost(a) < v): 
+                m = a
+
+    # // spillWorklist ← spillWorklist \ {m}
+        self.spillWorklist.remove(m)
+    # // simplifyWorklist ← simplifyWorklist ∪ {m}
+        self.simplifyWorklist.append(m)
+    # // FreezeMoves(m)
+        self.freezeMoves(m)
+
+    def livenessAnalysis(self):
+        assemFlowGraph = flowgraph.AssemFlowGraph.instr(self.instrs)
+        livenessOutput = assemFlowGraph
+    
+    def build(self):
+        pass
+
+    def make_work_list(self):
+        k = self.preColoredNodes.len()
+    # // forall n ∈ initial
+        nodeIterator: iter(graph.Node) = self.initialNodes
+        for nodeIterator in nodeIterator.next():
+    #   // Iniciando nosso n como no pseudocódigo
+            n: graph.Node = nodeIterator.next()
+    #   // initial ← initial \ {n}
+            nodeIterator.remove()
+
+    #   // if degree[n] ≥ K then
+        if self.nodeDegreeTable(n) >= k:
+    #     // spillWorklist ← spillWorklist ∪ {n}
+            self.spillWorklist.append(n)
+    #   }
+    #   // else if MoveRelated(n) then
+        else: 
+            if flowgraph.AssemFlowGraph.is_move(n):
+    #     // freezeWorklist ← freezeWorklist ∪ {n}
+                self.freezeWorklist.append(n)
+            else:
+    #     // simplifyWorklist ← simplifyWorklist ∪ {n}
+                self.simplifyWorklist.append(n)
+
+    def coalesce_aux_first_check(self):
+        pass
+
+    def ok(self):
+        pass
+
+    def coalesce_aux_second_check(self):
+        pass
+
+    def freezeMoves(self):
+        pass
+
+    def assignColors(self):
+        pass
+
+    def rewriteProgram(self):
+        pass
+
+    def decrementDegree(self):
+        pass
+        
+    def temp_map(self, temp: temp.Temp) -> str:
+        str: temp  = frame.TempMap(temp)
+
+        if str == None:
+            str = frame.TempMap(InterferenceGraph.gtemp(self.nodeColorTable.get(InterferenceGraph.tnode(temp))))
+        return temp.to_string()
 
 class Color(temp.TempMap):
     def __init__(self, ig: InterferenceGraph, initial: temp.TempMap, registers: temp.TempList):
@@ -29,6 +168,8 @@ class Color(temp.TempMap):
     def temp_map(self, temp: temp.Temp) -> str:
         #TODO
         return temp.to_string()
+
+    
 
 class InterferenceGraph(graph.Graph):
     
