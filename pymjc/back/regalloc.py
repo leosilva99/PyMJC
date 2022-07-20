@@ -10,12 +10,99 @@ class RegAlloc (temp.TempMap):
     def __init__(self, frame: frame.Frame, instr_list: assem.InstrList):
         self.frame: frame.Frame = frame
         self.instrs: assem.InstrList = instr_list
+        
+        preColoredNodes: graph.Node = {}
+        normalColoredNodes: graph.Node = {}
+
+        initialNodes: graph.Node = {}
+        spillNodess: graph.Node = {}
+        coalesceNodes: graph.Node = {}
+
+        nodeStack: graph.Node = []
+
+        simplifyWorklist: graph.Node = {}
+        freezeWorklist: graph.Node = {}
+        spillWorklist: graph.Node = {}
+
+        coalesceMoveNodes: graph.Node = {}
+        constrainMoveNodes: graph.Node = {}
+        freezeMoveNodes: graph.Node = {}
+        worklistMoveNodes: graph.Node = {}
+        activeMoveNodes: graph.Node = {}
+
+        adjacenceList: graph.Node[graph.Node] = graph.Node()
+
+        adjacenceSets: graph.Graph.rm_edge = {}
+
+        livenessOutput: Liveness.out
+        assemFlowGraph: flowgraph.AssemFlowGraph
+
+        generatedSpillTemps: temp.Temp = {}
+
+
         #TODO
+    
+    def simplify (self):
+    # Iterator<Node> temporaryIterator = simplifyWorklist.iterator();
+
+    # // let n ∈ simplifyWorklist
+    # Node n = temporaryIterator.next();
+    # // simplifyWorklist ← simplifyWorklist \ {n}
+    # temporaryIterator.remove();
+
+    # // push(n, selectStack)
+    # nodeStack.push(n);
+
+    # // forall m ∈ Adjacent(n)
+    # for (Node m : Adjacent(n)) {
+    #   // DecrementDegree(m)
+    #   DecrementDegree(m);     
+        pass
+
+    def coalesce(self):
+        pass
+
+    def freeze(self):
+        pass
+
+    def selectSpill(self):
+        pass
+
+    def livenessAnalysis(self):
+        assemFlowGraph = flowgraph.AssemFlowGraph.instr(self.instrs)
+        livenessOutput = assemFlowGraph
+    
+    def build(self):
+        pass
+
+    def make_work_list(self):
+        pass
+
+    def coalesce_aux_first_check(self):
+        pass
+
+    def ok(self):
+        pass
+
+    def coalesce_aux_second_check(self):
+        pass
+
+    def freezeMoves(self):
+        pass
+
+    def AssignColors(self):
+        pass
+
+    def rewriteProgram(self):
+        pass
 
     def temp_map(self, temp: temp.Temp) -> str:
         #TODO
+        str: temp  = frame.TempMap(temp)
+
+        if str == None:
+            str = frame.TempMap(InterferenceGraph.gtemp(self.nodeColorTable.get(InterferenceGraph.tnode(temp))))
         return temp.to_string()
-    
 
 class Color(temp.TempMap):
     def __init__(self, ig: InterferenceGraph, initial: temp.TempMap, registers: temp.TempList):
