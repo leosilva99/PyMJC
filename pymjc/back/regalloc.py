@@ -71,7 +71,20 @@ class RegAlloc (temp.TempMap):
         pass
 
     def selectSpill(self):
-        pass
+        m: graph.Node = self.spillWorklist.iter().next()
+        v = InterferenceGraph.spill_cost(m)
+
+        a = graph.Node
+        for a in self.spillWorklist:
+           if (InterferenceGraph.spill_cost(a) < v): 
+                m = a
+
+    # // spillWorklist ← spillWorklist \ {m}
+        self.spillWorklist.remove(m)
+    # // simplifyWorklist ← simplifyWorklist ∪ {m}
+        self.simplifyWorklist.append(m)
+    # // FreezeMoves(m)
+        self.freezeMoves(m)
 
     def livenessAnalysis(self):
         assemFlowGraph = flowgraph.AssemFlowGraph.instr(self.instrs)
@@ -103,10 +116,8 @@ class RegAlloc (temp.TempMap):
 
     def decrementDegree(self):
         pass
-    
-    
+        
     def temp_map(self, temp: temp.Temp) -> str:
-        #TODO
         str: temp  = frame.TempMap(temp)
 
         if str == None:
