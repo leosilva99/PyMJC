@@ -80,11 +80,9 @@ class RegAlloc (temp.TempMap):
         self.simplifyWorklist.append(u)
     # // FreezeMoves(u)
         self.freezeMoves(u)
-        
-        pass
 
     def selectSpill(self):
-        m: graph.Node = self.spillWorklist.iter().next()
+        m: iter(graph.Node) = self.spillWorklist.iter().next()
         v = InterferenceGraph.spill_cost(m)
 
         a = graph.Node
@@ -107,7 +105,28 @@ class RegAlloc (temp.TempMap):
         pass
 
     def make_work_list(self):
-        pass
+        k = self.preColoredNodes.len()
+    # // forall n ∈ initial
+        nodeIterator: iter(graph.Node) = self.initialNodes
+        for nodeIterator in nodeIterator.next():
+    #   // Iniciando nosso n como no pseudocódigo
+            n: graph.Node = nodeIterator.next()
+    #   // initial ← initial \ {n}
+            nodeIterator.remove()
+
+    #   // if degree[n] ≥ K then
+        if self.nodeDegreeTable(n) >= k:
+    #     // spillWorklist ← spillWorklist ∪ {n}
+            self.spillWorklist.append(n)
+    #   }
+    #   // else if MoveRelated(n) then
+        else: 
+            if flowgraph.AssemFlowGraph.is_move(n):
+    #     // freezeWorklist ← freezeWorklist ∪ {n}
+                self.freezeWorklist.append(n)
+            else:
+    #     // simplifyWorklist ← simplifyWorklist ∪ {n}
+                self.simplifyWorklist.append(n)
 
     def coalesce_aux_first_check(self):
         pass
@@ -121,7 +140,7 @@ class RegAlloc (temp.TempMap):
     def freezeMoves(self):
         pass
 
-    def AssignColors(self):
+    def assignColors(self):
         pass
 
     def rewriteProgram(self):
