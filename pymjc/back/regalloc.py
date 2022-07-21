@@ -128,11 +128,23 @@ class RegAlloc (temp.TempMap):
     #     // simplifyWorklist ← simplifyWorklist ∪ {n}
                 self.simplifyWorklist.append(n)
 
-    def coalesce_aux_first_check(self):
-        pass
+    def coalesce_aux_first_check(self, u: graph.Node,  v: graph.Node):
+    #     // u ∈ precolored
+        if not graph.Graph.in_list(self.preColoredNodes, u):
+           return False
+    # // (∀t ∈ Adjacent(v), OK(t, u))
+        t = graph.Node
+        for t in graph.Node.adj(v):
+           if not RegAlloc.ok(t, u): 
+                return False
 
-    def ok(self):
-        pass
+        return True
+
+    def ok(self, t: graph.Node,  r: graph.Node):
+        k = self.preColoredNodes.len()
+    # // degree[t] < K ∨ t ∈ precolored ∨ (t,r) ∈ adjSet
+        result = graph.Graph.in_list(self.preColoredNodes, t) or self.nodeDegreeTable(t) < k or graph.Graph.in_list(self.adjacenceSets, Edge.get_edge(t, r))
+        return result
 
     def coalesce_aux_second_check(self):
         pass
