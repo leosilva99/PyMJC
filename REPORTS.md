@@ -98,94 +98,94 @@
     > Os dois trabalharam conjuntamente para codificar o IRVisitor.
 
 
-# 4º Relatóio: Etapa AI-d (Seleção de Instruções)
+# 4º Relatóio: Etapa AI-d (Seleção de Instruções) e 5º Relatóio: Etapa AI-e (Alocação de Registradores)
 
 1. Qual é o nome do relator?
 
-    > Escreva sua resposta aqui
+    > LEONARDO OLIVEIRA SILVA
 
 2. A etapa foi completamente ou parcialmente concluída?
 
-    > Escreva sua resposta aqui
+    > Parcialmente concluída.
 
 3. No caso de parcialmente concluída, o que não foi concluído?
 
-    > Escreva sua resposta aqui
+    > Faltaram algumas definições em RegAlloc.
 
 4. O programa passa nos testes automatizados?
     
-    > Escreva sua resposta aqui
+    > Sim.
 
 5. Algum erro de execução foi encontrado para alguma das entradas? Quais?
     
-    > Escreva sua resposta aqui
+    > Não.
 
 6. Quais as dificuldades encontradas para realização da etapa do projeto?
     
-    > Escreva sua resposta aqui
+    > Tradução e adaptação do código em java para as definições em nosso projeto.
 
 7. Qual a participação de cada membro da equipe na etapa de execução?
     
-    > Escreva sua resposta aqui
+    > Os dois trabalharam em conjunto.
 
 
 # 5º Relatóio: Etapa AI-e (Alocação de Registradores)
 
 1. Qual é o nome do relator?
 
-    > Escreva sua resposta aqui
+    > Feito em conjunto com a etapa anterior.
 
 2. A etapa foi completamente ou parcialmente concluída?
 
-    > Escreva sua resposta aqui
+    > Feito em conjunto com a etapa anterior.
 
 3. No caso de parcialmente concluída, o que não foi concluído?
 
-    > Escreva sua resposta aqui
+    > Feito em conjunto com a etapa anterior.
 
 4. O programa passa nos testes automatizados?
     
-    > Escreva sua resposta aqui
+    > Feito em conjunto com a etapa anterior.
 
 5. Algum erro de execução foi encontrado para alguma das entradas? Quais?
     
-    > Escreva sua resposta aqui
+    > Feito em conjunto com a etapa anterior.
 
 6. Quais as dificuldades encontradas para realização da etapa do projeto?
     
-    > Escreva sua resposta aqui
+    > Feito em conjunto com a etapa anterior.
 
 7. Qual a participação de cada membro da equipe na etapa de execução?
     
-    > Escreva sua resposta aqui
+    > Feito em conjunto com a etapa anterior.
 
 
 # 6º Relatóio: Etapa AI-f (Integração e Geração do Código Final)
 
 1. Qual é o nome do relator?
 
-    > Escreva sua resposta aqui
+    > Já contabilizado.
 
 2. A etapa foi completamente ou parcialmente concluída?
 
-    > Escreva sua resposta aqui
+    > Já contabilizado.
 
 3. No caso de parcialmente concluída, o que não foi concluído?
 
-    > Escreva sua resposta aqui
+    > Já contabilizado.
 
 4. O programa passa nos testes automatizados?
     
-    > Escreva sua resposta aqui
+    > Já contabilizado.
 
 5. Algum erro de execução foi encontrado para alguma das entradas? Quais?
     
-    > Escreva sua resposta aqui
+    > Já contabilizado.
 
 6. Quais as dificuldades encontradas para realização da etapa do projeto?
     
-    > Escreva sua resposta aqui
+    > Já contabilizado.
 
 7. Qual a participação de cada membro da equipe na etapa de execução?
     
-    > Escreva sua resposta aqui
+    > Já contabilizado.
