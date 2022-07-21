@@ -154,8 +154,17 @@ class RegAlloc (temp.TempMap):
         result: bool = graph.Graph.in_list(self.preColoredNodes, t) or self.nodeDegreeTable(t) < k or graph.Graph.in_list(self.adjacenceSets, Edge.get_edge(t, r))
         return result
 
-    def coalesce_aux_second_check(self):
-        pass
+    def coalesce_aux_second_check(self, u: graph.Node,  v: graph.Node):
+    # ∈ precolored
+        if graph.Graph.in_list(self.preColoredNodes, u):
+           return False
+
+    # // Conservative(Adjacent(u) ∪ Adjacent(v))
+        adjacent = set()
+        adjacent = u.adj()
+        adjacent.extend(v.adj())
+
+        return self.conservative(adjacent)
 
     def freezeMoves(self):
         pass
@@ -168,7 +177,19 @@ class RegAlloc (temp.TempMap):
 
     def decrementDegree(self):
         pass
-        
+
+    def conservative(self, nodes: graph.NodeList):
+        # // let k = 0
+        k = 0
+        q = self.preColoredNodes.len()
+        # // forall n ∈ nodes
+        for node in nodes:
+            # // if degree[n] ≥ K then k ← k + 1
+            if self.nodeDegreeTable(node) >= q:
+                k = k + 1
+
+        return(k < q)
+
 
 class Color(temp.TempMap):
     def __init__(self, ig: InterferenceGraph, initial: temp.TempMap, registers: temp.TempList):
